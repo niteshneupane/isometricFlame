@@ -1672,3 +1672,8 @@ final matrix = [
     0
   ],
 ];
+
+const kScale = 2.0;
+const kSrcTileSize = 32.0;
+const kDestTileSize = kScale * kSrcTileSize;
+const kTileHeight = kScale * (8.0);

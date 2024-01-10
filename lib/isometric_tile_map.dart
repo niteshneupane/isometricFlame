@@ -3,10 +3,12 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/sprite.dart';
 import 'package:isometrictest/globals.dart';
+import 'package:isometrictest/ground.dart';
 import 'package:isometrictest/joystick.dart';
-import 'package:isometrictest/macho_player.dart';
+import 'package:isometrictest/man_player.dart';
 
-class IsometricTileMap extends FlameGame with MouseMovementDetector {
+class IsometricTileMap extends FlameGame
+    with MouseMovementDetector, HasCollisionDetection {
   static const scale = 2.0;
   static const srcTileSize = 32.0;
   static const destTileSize = scale * srcTileSize;
@@ -17,27 +19,23 @@ class IsometricTileMap extends FlameGame with MouseMovementDetector {
   @override
   Future<void> onLoad() async {
     // For Tile
-    topLeft = Vector2(size.x * 0.5, -size.y * 0.5);
     final tilesetImage = await images.load('tile_maps/tiles.png');
     final tileset = SpriteSheet(
       image: tilesetImage,
       srcSize: Vector2.all(srcTileSize),
     );
 
-    world.add(
-      base = IsometricTileMapComponent(
-        tileset,
-        matrix,
-        destTileSize: Vector2.all(destTileSize),
-        tileHeight: tileHeight,
-        position: topLeft,
-      ),
+    final ground = Ground(
+      tileset,
+      matrix,
+      position: Vector2(size.x * 0.5, -size.y * 0.5),
     );
-
+    world.add(ground);
     final joyStick = JoyStick();
 
-    final player = MachoPlayer(joyStick);
+    final player = ManPlayer(joyStick);
     world.add(player);
+
     camera.follow(player);
     camera.viewport.add(joyStick);
   }
