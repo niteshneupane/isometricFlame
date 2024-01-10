@@ -7,7 +7,7 @@ import 'package:isometrictest/joystick.dart';
 class MachoPlayer extends SpriteAnimationComponent
     with HasGameRef, CollisionCallbacks {
   /// Pixels/s
-  double maxSpeed = 30.0;
+  double maxSpeed = 100.0;
   late final Vector2 _lastSize = size.clone();
   late final Transform2D _lastTransform = transform.clone();
 
@@ -64,11 +64,8 @@ class MachoPlayer extends SpriteAnimationComponent
     if (!joystick.delta.isZero() && activeCollisions.isEmpty) {
       _lastSize.setFrom(size);
       _lastTransform.setFrom(transform);
-
-      print(joystick.direction.name);
       walkingDirection = joystick.direction;
       position.add(joystick.relativeDelta * maxSpeed * dt);
-      // angle = joystick.delta.screenAngle();
     } else {
       walkingDirection = null;
     }
