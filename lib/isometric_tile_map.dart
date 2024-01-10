@@ -1,6 +1,4 @@
-import 'dart:ui';
 import 'package:flame/components.dart';
-import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/sprite.dart';
@@ -9,27 +7,13 @@ import 'package:isometrictest/joystick.dart';
 import 'package:isometrictest/macho_player.dart';
 
 class IsometricTileMap extends FlameGame with MouseMovementDetector {
-  static const String description = '''
-    Shows an example of how to use the `IsometricTileMapComponent`.\n\n
-    Move the mouse over the board to see a selector appearing on the tiles.
-  ''';
-  late Vector2 topLeft;
   static const scale = 2.0;
   static const srcTileSize = 32.0;
   static const destTileSize = scale * srcTileSize;
+  static const tileHeight = scale * (8.0);
 
-  static const halfSize = true;
-  static const tileHeight = scale * (halfSize ? 8.0 : 16.0);
-  // static const suffix = halfSize ? '-short' : '';
-
-  final originColor = Paint()..color = const Color.fromARGB(255, 223, 236, 37);
-  final originColor2 = Paint()..color = const Color(0xFFAA55FF);
-
+  late Vector2 topLeft;
   late IsometricTileMapComponent base;
-  // late Selector selector;
-
-  IsometricTileMap();
-
   @override
   Future<void> onLoad() async {
     // For Tile
@@ -40,7 +24,7 @@ class IsometricTileMap extends FlameGame with MouseMovementDetector {
       srcSize: Vector2.all(srcTileSize),
     );
 
-    add(
+    world.add(
       base = IsometricTileMapComponent(
         tileset,
         matrix,
@@ -53,7 +37,7 @@ class IsometricTileMap extends FlameGame with MouseMovementDetector {
     final joyStick = JoyStick();
 
     final player = MachoPlayer(joyStick);
-    add(player);
+    world.add(player);
     camera.follow(player);
     camera.viewport.add(joyStick);
   }
