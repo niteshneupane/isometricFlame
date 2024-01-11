@@ -2,6 +2,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/sprite.dart';
+import 'package:flutter/material.dart';
 import 'package:isometrictest/joystick.dart';
 
 class ManPlayer extends SpriteAnimationComponent
@@ -28,7 +29,7 @@ class ManPlayer extends SpriteAnimationComponent
 
   ManPlayer(this.joystick)
       : super(
-          size: Vector2(64,120),
+          size: Vector2(64, 120),
           anchor: Anchor.center,
         );
 
@@ -48,7 +49,7 @@ class ManPlayer extends SpriteAnimationComponent
 
     final spriteSheet = SpriteSheet(
       image: await game.images.load('walking_man.png'),
-      srcSize: Vector2(64,120),
+      srcSize: Vector2(64, 120),
     );
 
     walkingDownLeftAnimation =
@@ -64,22 +65,34 @@ class ManPlayer extends SpriteAnimationComponent
     walkingUpLeftAnimation =
         spriteSheet.createAnimation(row: 5, stepTime: 0.1, to: 8);
     walkingUpAnimation =
-        spriteSheet.createAnimation(row: 6, stepTime: 0.1, to: 9);
+        spriteSheet.createAnimation(row: 6, stepTime: 0.1, to: 8);
     walkingUpRightAnimation =
-        spriteSheet.createAnimation(row: 7, stepTime: 0.1, to: 9);
-    idleAnimation =
-        spriteSheet.createAnimation(row: 1, stepTime: 0.8, to: 1);
+        spriteSheet.createAnimation(row: 7, stepTime: 0.1, to: 8);
+    idleAnimation = spriteSheet.createAnimation(row: 1, stepTime: 0.8, to: 1);
 
     animation = idleAnimation;
     position = Vector2(size.x * 0.6, size.y * 0.5);
 
-    add(RectangleHitbox());
+    add(
+      RectangleHitbox(
+        size: Vector2(25, 20),
+        position: Vector2(
+          size.x * 0.5,
+          size.y * 0.88,
+        ),
+        anchor: Anchor.bottomCenter,
+      ),
+    );
+
+    debugMode = false;
+    debugColor = Colors.amber;
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    if (!joystick.delta.isZero() && activeCollisions.isEmpty) {
+    if (activeCollisions.isNotEmpty) return;
+    if (!joystick.delta.isZero()) {
       _lastSize.setFrom(size);
       _lastTransform.setFrom(transform);
       walkingDirection = joystick.direction;
@@ -96,7 +109,8 @@ class ManPlayer extends SpriteAnimationComponent
     PositionComponent other,
   ) {
     super.onCollisionStart(intersectionPoints, other);
-    print("Other ${other}");
+    print("Other $other");
+    // InvizWall
 
     transform.setFrom(_lastTransform);
     size.setFrom(_lastSize);
