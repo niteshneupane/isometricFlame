@@ -2,10 +2,9 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/sprite.dart';
-import 'package:flutter/material.dart';
-import 'package:isometrictest/joystick.dart';
+import 'package:isometrictest/controls/joystick.dart';
 
-class ManPlayer extends SpriteAnimationComponent
+class MachoPlayer extends SpriteAnimationComponent
     with HasGameRef, CollisionCallbacks {
   /// Pixels/s
   double maxSpeed = 100.0;
@@ -16,20 +15,14 @@ class ManPlayer extends SpriteAnimationComponent
   late SpriteAnimation walkingLeftAnimation;
   late SpriteAnimation walkingRightAnimation;
   late SpriteAnimation walkingUpAnimation;
-  late SpriteAnimation walkingUpLeftAnimation;
-  late SpriteAnimation walkingUpRightAnimation;
-
   late SpriteAnimation walkingDownAnimation;
-  late SpriteAnimation walkingDownLeftAnimation;
-  late SpriteAnimation walkingDownRightAnimation;
-
   late SpriteAnimation idleAnimation;
 
   JoystickDirection? walkingDirection;
 
-  ManPlayer(this.joystick)
+  MachoPlayer(this.joystick)
       : super(
-          size: Vector2(64, 120),
+          size: Vector2.all(64),
           anchor: Anchor.center,
         );
 
@@ -38,61 +31,37 @@ class ManPlayer extends SpriteAnimationComponent
     // sprite = await game.loadSprite('layers/player.png');
 
     // For Walking
-    // DL 0
-    // D 1
-    // DR 2
-    // L 3,
-    // R 4,
-    // UL 5,
-    // U 6 ,
-    // UR 7
+    // Up 8
+    // left 9
+    // Down 10
+    // right 11
 
     final spriteSheet = SpriteSheet(
-      image: await game.images.load('walking_man.png'),
-      srcSize: Vector2(64, 120),
+      image: await game.images.load('macho_pig.png'),
+      srcSize: Vector2.all(64),
     );
 
-    walkingDownLeftAnimation =
-        spriteSheet.createAnimation(row: 0, stepTime: 0.1, to: 8);
-    walkingDownAnimation =
-        spriteSheet.createAnimation(row: 1, stepTime: 0.1, to: 8);
-    walkingDownRightAnimation =
-        spriteSheet.createAnimation(row: 2, stepTime: 0.1, to: 8);
-    walkingLeftAnimation =
-        spriteSheet.createAnimation(row: 3, stepTime: 0.1, to: 8);
-    walkingRightAnimation =
-        spriteSheet.createAnimation(row: 4, stepTime: 0.1, to: 8);
-    walkingUpLeftAnimation =
-        spriteSheet.createAnimation(row: 5, stepTime: 0.1, to: 8);
     walkingUpAnimation =
-        spriteSheet.createAnimation(row: 6, stepTime: 0.1, to: 8);
-    walkingUpRightAnimation =
-        spriteSheet.createAnimation(row: 7, stepTime: 0.1, to: 8);
-    idleAnimation = spriteSheet.createAnimation(row: 1, stepTime: 0.8, to: 1);
+        spriteSheet.createAnimation(row: 8, stepTime: 0.1, to: 9);
+    walkingLeftAnimation =
+        spriteSheet.createAnimation(row: 9, stepTime: 0.1, to: 9);
+    walkingDownAnimation =
+        spriteSheet.createAnimation(row: 10, stepTime: 0.1, to: 9);
+    walkingRightAnimation =
+        spriteSheet.createAnimation(row: 11, stepTime: 0.1, to: 9);
+    idleAnimation =
+        spriteSheet.createAnimation(row: 14, stepTime: 0.8, from: 1, to: 3);
 
     animation = idleAnimation;
     position = Vector2(size.x * 0.6, size.y * 0.5);
 
-    add(
-      RectangleHitbox(
-        size: Vector2(25, 20),
-        position: Vector2(
-          size.x * 0.5,
-          size.y * 0.88,
-        ),
-        anchor: Anchor.bottomCenter,
-      ),
-    );
-
-    debugMode = false;
-    debugColor = Colors.amber;
+    add(RectangleHitbox());
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    if (activeCollisions.isNotEmpty) return;
-    if (!joystick.delta.isZero()) {
+    if (!joystick.delta.isZero() && activeCollisions.isEmpty) {
       _lastSize.setFrom(size);
       _lastTransform.setFrom(transform);
       walkingDirection = joystick.direction;
@@ -109,9 +78,6 @@ class ManPlayer extends SpriteAnimationComponent
     PositionComponent other,
   ) {
     super.onCollisionStart(intersectionPoints, other);
-    print("Other $other");
-    // InvizWall
-
     transform.setFrom(_lastTransform);
     size.setFrom(_lastSize);
   }
@@ -119,24 +85,24 @@ class ManPlayer extends SpriteAnimationComponent
   SpriteAnimation changeAnimation() {
     switch (walkingDirection) {
       case JoystickDirection.upLeft:
-        return walkingUpLeftAnimation;
+        return walkingLeftAnimation;
       case JoystickDirection.up:
         return walkingUpAnimation;
 
       case JoystickDirection.upRight:
-        return walkingUpRightAnimation;
+        return walkingRightAnimation;
 
       case JoystickDirection.right:
         return walkingRightAnimation;
 
       case JoystickDirection.downRight:
-        return walkingDownRightAnimation;
+        return walkingRightAnimation;
 
       case JoystickDirection.down:
         return walkingDownAnimation;
 
       case JoystickDirection.downLeft:
-        return walkingDownLeftAnimation;
+        return walkingLeftAnimation;
 
       case JoystickDirection.left:
         return walkingLeftAnimation;

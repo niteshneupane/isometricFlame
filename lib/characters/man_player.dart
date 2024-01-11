@@ -2,9 +2,10 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/sprite.dart';
-import 'package:isometrictest/joystick.dart';
+import 'package:flutter/material.dart';
+import 'package:isometrictest/controls/joystick.dart';
 
-class MachoPlayer extends SpriteAnimationComponent
+class ManPlayer extends SpriteAnimationComponent
     with HasGameRef, CollisionCallbacks {
   /// Pixels/s
   double maxSpeed = 100.0;
@@ -15,14 +16,20 @@ class MachoPlayer extends SpriteAnimationComponent
   late SpriteAnimation walkingLeftAnimation;
   late SpriteAnimation walkingRightAnimation;
   late SpriteAnimation walkingUpAnimation;
+  late SpriteAnimation walkingUpLeftAnimation;
+  late SpriteAnimation walkingUpRightAnimation;
+
   late SpriteAnimation walkingDownAnimation;
+  late SpriteAnimation walkingDownLeftAnimation;
+  late SpriteAnimation walkingDownRightAnimation;
+
   late SpriteAnimation idleAnimation;
 
   JoystickDirection? walkingDirection;
 
-  MachoPlayer(this.joystick)
+  ManPlayer(this.joystick)
       : super(
-          size: Vector2.all(64),
+          size: Vector2(64, 120) / 2,
           anchor: Anchor.center,
         );
 
@@ -31,37 +38,60 @@ class MachoPlayer extends SpriteAnimationComponent
     // sprite = await game.loadSprite('layers/player.png');
 
     // For Walking
-    // Up 8
-    // left 9
-    // Down 10
-    // right 11
+    // DL 0
+    // D 1
+    // DR 2
+    // L 3,
+    // R 4,
+    // UL 5,
+    // U 6 ,
+    // UR 7
 
     final spriteSheet = SpriteSheet(
-      image: await game.images.load('macho_pig.png'),
-      srcSize: Vector2.all(64),
+      image: await game.images.load('walking_man.png'),
+      srcSize: Vector2(64, 120),
     );
 
-    walkingUpAnimation =
-        spriteSheet.createAnimation(row: 8, stepTime: 0.1, to: 9);
-    walkingLeftAnimation =
-        spriteSheet.createAnimation(row: 9, stepTime: 0.1, to: 9);
+    walkingDownLeftAnimation =
+        spriteSheet.createAnimation(row: 0, stepTime: 0.1, to: 8);
     walkingDownAnimation =
-        spriteSheet.createAnimation(row: 10, stepTime: 0.1, to: 9);
+        spriteSheet.createAnimation(row: 1, stepTime: 0.1, to: 8);
+    walkingDownRightAnimation =
+        spriteSheet.createAnimation(row: 2, stepTime: 0.1, to: 8);
+    walkingLeftAnimation =
+        spriteSheet.createAnimation(row: 3, stepTime: 0.1, to: 8);
     walkingRightAnimation =
-        spriteSheet.createAnimation(row: 11, stepTime: 0.1, to: 9);
-    idleAnimation =
-        spriteSheet.createAnimation(row: 14, stepTime: 0.8, from: 1, to: 3);
+        spriteSheet.createAnimation(row: 4, stepTime: 0.1, to: 8);
+    walkingUpLeftAnimation =
+        spriteSheet.createAnimation(row: 5, stepTime: 0.1, to: 8);
+    walkingUpAnimation =
+        spriteSheet.createAnimation(row: 6, stepTime: 0.1, to: 8);
+    walkingUpRightAnimation =
+        spriteSheet.createAnimation(row: 7, stepTime: 0.1, to: 8);
+    idleAnimation = spriteSheet.createAnimation(row: 1, stepTime: 0.8, to: 1);
 
     animation = idleAnimation;
-    position = Vector2(size.x * 0.6, size.y * 0.5);
+    position = Vector2(580, 270);
+    add(
+      RectangleHitbox(
+        size: Vector2(25, 20),
+        position: Vector2(
+          size.x * 0.5,
+          size.y * 0.88,
+        ),
+        anchor: Anchor.bottomCenter,
+      ),
+    );
 
-    add(RectangleHitbox());
+    debugMode = false;
+    debugColor = Colors.amber;
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    if (!joystick.delta.isZero() && activeCollisions.isEmpty) {
+    if (activeCollisions.isNotEmpty) return;
+    if (!joystick.delta.isZero()) {
       _lastSize.setFrom(size);
       _lastTransform.setFrom(transform);
       walkingDirection = joystick.direction;
@@ -78,6 +108,9 @@ class MachoPlayer extends SpriteAnimationComponent
     PositionComponent other,
   ) {
     super.onCollisionStart(intersectionPoints, other);
+    print("Other $other");
+    // InvizWall
+
     transform.setFrom(_lastTransform);
     size.setFrom(_lastSize);
   }
@@ -85,24 +118,24 @@ class MachoPlayer extends SpriteAnimationComponent
   SpriteAnimation changeAnimation() {
     switch (walkingDirection) {
       case JoystickDirection.upLeft:
-        return walkingLeftAnimation;
+        return walkingUpLeftAnimation;
       case JoystickDirection.up:
         return walkingUpAnimation;
 
       case JoystickDirection.upRight:
-        return walkingRightAnimation;
+        return walkingUpRightAnimation;
 
       case JoystickDirection.right:
         return walkingRightAnimation;
 
       case JoystickDirection.downRight:
-        return walkingRightAnimation;
+        return walkingDownRightAnimation;
 
       case JoystickDirection.down:
         return walkingDownAnimation;
 
       case JoystickDirection.downLeft:
-        return walkingLeftAnimation;
+        return walkingDownLeftAnimation;
 
       case JoystickDirection.left:
         return walkingLeftAnimation;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/painting.dart';
@@ -19,4 +21,11 @@ class JoyStick extends JoystickComponent {
             bottom: 40,
           ),
         );
+
+
+        @override
+  FutureOr<void> onLoad() {
+    super.onLoad();
+    anchor = Anchor.bottomCenter;
+  }
 }

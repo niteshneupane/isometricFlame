@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import './globals.dart';
+import '../utils/globals.dart';
 
 class Ground extends IsometricTileMapComponent {
   Ground(

@@ -18,7 +18,10 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: GameWidget(game: IsometricTileMap()),
+      home: GameWidget(game: IsometricTileMap(),
+      
+      
+      ),
     );
   }
 }

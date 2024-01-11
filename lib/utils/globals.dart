@@ -1677,3 +1677,5 @@ const kScale = 2.0;
 const kSrcTileSize = 32.0;
 const kDestTileSize = kScale * kSrcTileSize;
 const kTileHeight = kScale * (8.0);
+const kLargeTileHeight = kScale * (16.0);
+
