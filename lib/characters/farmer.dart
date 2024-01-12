@@ -1,12 +1,21 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
+import 'package:flame/palette.dart';
 import 'package:flame/sprite.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:isometrictest/components/land_component.dart';
+import 'package:isometrictest/components/unwalkable_component.dart';
 import 'package:isometrictest/controls/joystick.dart';
+import 'package:isometrictest/farm_game.dart';
+import 'package:isometrictest/provider/land_provider.dart';
 
-class ManPlayer extends SpriteAnimationComponent
-    with HasGameRef, CollisionCallbacks {
+class Farmer extends SpriteAnimationComponent
+    with
+        HasGameReference<FarmGame>,
+        CollisionCallbacks,
+        RiverpodComponentMixin {
   /// Pixels/s
   double maxSpeed = 100.0;
   late final Vector2 _lastSize = size.clone();
@@ -27,28 +36,41 @@ class ManPlayer extends SpriteAnimationComponent
 
   JoystickDirection? walkingDirection;
 
-  ManPlayer(this.joystick)
-      : super(
-          size: Vector2(64, 120) / 2,
-          anchor: Anchor.center,
+  late TextComponent landIdTextComponent;
+
+  int? currentSelectedLand;
+
+  Farmer(
+    this.joystick, {
+    required Vector2 position,
+  }) : super(
+          size: Vector2(64, 120) * 0.9,
+          anchor: Anchor.bottomCenter,
+          position: position,
         );
+
+  bool get dontWalk {
+    if (activeCollisions.isEmpty) {
+      if (landIdTextComponent.text.isNotEmpty) {
+        landIdTextComponent.text = "";
+        currentSelectedLand = null;
+        ref.invalidate(selectedLandProvider);
+      }
+      return false;
+    }
+    for (var element in activeCollisions) {
+      return element is UnwalkableComponent;
+    }
+    return false;
+  }
 
   @override
   Future<void> onLoad() async {
-    // sprite = await game.loadSprite('layers/player.png');
-
-    // For Walking
-    // DL 0
-    // D 1
-    // DR 2
-    // L 3,
-    // R 4,
-    // UL 5,
-    // U 6 ,
-    // UR 7
-
+    super.onLoad();
     final spriteSheet = SpriteSheet(
-      image: await game.images.load('walking_man.png'),
+      image: game.images.fromCache(
+        "assets/images/walking_man.png",
+      ),
       srcSize: Vector2(64, 120),
     );
 
@@ -71,7 +93,6 @@ class ManPlayer extends SpriteAnimationComponent
     idleAnimation = spriteSheet.createAnimation(row: 1, stepTime: 0.8, to: 1);
 
     animation = idleAnimation;
-    position = Vector2(580, 270);
     add(
       RectangleHitbox(
         size: Vector2(25, 20),
@@ -83,19 +104,39 @@ class ManPlayer extends SpriteAnimationComponent
       ),
     );
 
-    debugMode = false;
+    final style = TextStyle(color: BasicPalette.white.color);
+    final regular = TextPaint(style: style);
+    landIdTextComponent = TextBoxComponent(
+      text: "",
+      boxConfig: TextBoxConfig(
+        margins: EdgeInsets.zero,
+        growingBox: false,
+        maxWidth: size.x,
+      ),
+      align: Anchor.center,
+      textRenderer: regular,
+    );
+
+    add(landIdTextComponent);
+
+    // debugMode = true;
     debugColor = Colors.amber;
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-    if (activeCollisions.isNotEmpty) return;
+
+    if (dontWalk) return;
+
     if (!joystick.delta.isZero()) {
       _lastSize.setFrom(size);
       _lastTransform.setFrom(transform);
       walkingDirection = joystick.direction;
-      position.add(joystick.relativeDelta * maxSpeed * dt);
+
+      final movementThisFrame = joystick.relativeDelta * maxSpeed * dt;
+
+      position.add(movementThisFrame);
     } else {
       walkingDirection = null;
     }
@@ -103,16 +144,11 @@ class ManPlayer extends SpriteAnimationComponent
   }
 
   @override
-  void onCollisionStart(
-    Set<Vector2> intersectionPoints,
-    PositionComponent other,
-  ) {
-    super.onCollisionStart(intersectionPoints, other);
-    print("Other $other");
-    // InvizWall
-
-    transform.setFrom(_lastTransform);
-    size.setFrom(_lastSize);
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollision(intersectionPoints, other);
+    if (other is LandComponents) {
+      showLandTextOverlay(other.id);
+    }
   }
 
   SpriteAnimation changeAnimation() {
@@ -142,6 +178,14 @@ class ManPlayer extends SpriteAnimationComponent
 
       default:
         return idleAnimation;
+    }
+  }
+
+  void showLandTextOverlay(int id) {
+    landIdTextComponent.text = "$id";
+    if (currentSelectedLand != id) {
+      currentSelectedLand = id;
+      ref.read(selectedLandProvider.notifier).update((state) => state = id);
     }
   }
 }
