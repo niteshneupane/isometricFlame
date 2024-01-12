@@ -25,6 +25,7 @@ class FarmGame extends FlameGame
   Future<void> onLoad() async {
     await images.loadAll([
       "assets/images/walking_man.png",
+      "assets/images/crops.png",
       // "assets/images/backdrop.png",
     ]);
     // cameraComponent.backdrop.add(
