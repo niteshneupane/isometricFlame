@@ -7,7 +7,7 @@ import 'package:isometrictest/farm_game.dart';
 
 class Tomato extends CropComponent with HasGameReference<FarmGame> {
   Tomato({
-    Vector2? position,
+    super. position,
     super.show,
   });
 
@@ -19,13 +19,14 @@ class Tomato extends CropComponent with HasGameReference<FarmGame> {
     );
     final spriteSheet = SpriteSheet(
       image: image,
-      srcSize: Vector2(66, 35),
-      margin: 18,
-      spacing: 14,
+      srcSize: Vector2(64, 81),
+      
     );
 
-    sprite = spriteSheet.getSprite(0, 2);
-    position = Vector2(-6, 8);
+    sprite = spriteSheet.getSprite(6, 2);
+    // size = Vector2(64*4, 81*4);
+    // position = Vector2.zero();
+    // position = Vector2(-6, 8);
 
     // debugMode = true;
   }

@@ -31,7 +31,7 @@ class LandComponents extends PolygonComponent
       ref.listen(selectedLandProvider, (previous, value) {
         isSelected = (value == id);
         if (isSelected) {
-          paint = Paint()..color = Colors.green;
+          paint = Paint()..color = Colors.grey.withOpacity(0.4);
         } else {
           paint = Paint()..color = Colors.transparent;
         }
@@ -46,20 +46,21 @@ class LandComponents extends PolygonComponent
 
     paint = Paint()..color = Colors.transparent;
 
-    final hitbox = PolygonHitbox(
-      v,
-      position: Vector2.zero(),
-      collisionType: CollisionType.passive,
-      isSolid: true,
-    );
-    add(hitbox);
+    
 
     final tomato = Tomato(
       position: Vector2.zero(),
       show: id == 15,
     );
     add(tomato);
-
-    // debugMode = true;
+    
+    final hitbox = PolygonHitbox(
+      v,
+      position: Vector2.zero(),
+      collisionType: CollisionType.passive,
+      isSolid: true,
+      
+    );
+    add(hitbox);
   }
 }

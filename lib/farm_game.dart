@@ -23,11 +23,14 @@ class FarmGame extends FlameGame
 
   @override
   Future<void> onLoad() async {
-    await images.loadAll([
-      "assets/images/walking_man.png",
-      "assets/images/crops.png",
-      // "assets/images/backdrop.png",
-    ]);
+    await images.loadAll(
+      [
+        "assets/images/walking_man.png",
+        "assets/images/crop.png",
+        "assets/images/crops.png", // 64*81
+        // "assets/images/backdrop.png",
+      ],
+    );
     // cameraComponent.backdrop.add(
     //   SpriteComponent.fromImage(
     //     images.fromCache("assets/images/backdrop.png"),

@@ -1,7 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
-import 'package:flame/palette.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +35,7 @@ class Farmer extends SpriteAnimationComponent
 
   JoystickDirection? walkingDirection;
 
-  late TextComponent landIdTextComponent;
+  // late TextComponent landIdTextComponent;
 
   int? currentSelectedLand;
 
@@ -51,9 +50,9 @@ class Farmer extends SpriteAnimationComponent
 
   bool get dontWalk {
     if (activeCollisions.isEmpty) {
-      if (landIdTextComponent.text.isNotEmpty) {
-        landIdTextComponent.text = "";
-        currentSelectedLand = null;
+      if (currentSelectedLand!=null) {
+        // landIdTextComponent.text = "";
+        // currentSelectedLand = null;
         ref.invalidate(selectedLandProvider);
       }
       return false;
@@ -104,20 +103,20 @@ class Farmer extends SpriteAnimationComponent
       ),
     );
 
-    final style = TextStyle(color: BasicPalette.white.color);
-    final regular = TextPaint(style: style);
-    landIdTextComponent = TextBoxComponent(
-      text: "",
-      boxConfig: TextBoxConfig(
-        margins: EdgeInsets.zero,
-        growingBox: false,
-        maxWidth: size.x,
-      ),
-      align: Anchor.center,
-      textRenderer: regular,
-    );
+    // final style = TextStyle(color: BasicPalette.white.color);
+    // final regular = TextPaint(style: style);
+    // landIdTextComponent = TextBoxComponent(
+    //   text: "",
+    //   boxConfig: TextBoxConfig(
+    //     margins: EdgeInsets.zero,
+    //     growingBox: false,
+    //     maxWidth: size.x,
+    //   ),
+    //   align: Anchor.center,
+    //   textRenderer: regular,
+    // );
 
-    add(landIdTextComponent);
+    // add(landIdTextComponent);
 
     // debugMode = true;
     debugColor = Colors.amber;
@@ -146,7 +145,11 @@ class Farmer extends SpriteAnimationComponent
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    if (other is LandComponents) {
+    if (other is UnwalkableComponent) {
+      transform.setFrom(_lastTransform);
+      size.setFrom(_lastSize);
+    } 
+     if (other is LandComponents) {
       showLandTextOverlay(other.id);
     }
   }
@@ -182,7 +185,7 @@ class Farmer extends SpriteAnimationComponent
   }
 
   void showLandTextOverlay(int id) {
-    landIdTextComponent.text = "$id";
+    // landIdTextComponent.text = "$id";
     if (currentSelectedLand != id) {
       currentSelectedLand = id;
       ref.read(selectedLandProvider.notifier).update((state) => state = id);

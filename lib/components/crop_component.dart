@@ -1,6 +1,8 @@
+
 import 'package:flame/components.dart';
 import 'package:flame/image_composition.dart';
 import 'package:isometrictest/utils/globals.dart';
+import 'package:isometrictest/utils/utils.dart';
 
 class CropComponent extends SpriteComponent {
   final bool _show;
@@ -12,8 +14,9 @@ class CropComponent extends SpriteComponent {
   })  : _show = show ?? true,
         super(
           sprite: sprite,
-          size: Vector2(worldTileSizeX, worldTileSizeY),
-          position: position,
+          size: Vector2(32, 81 * 0.5) * worldScale,
+          position: Vector2(worldTileSizeX * 0.5, worldTileSizeY).isoPoint(),
+          anchor: Anchor.bottomLeft,
         );
 
   @override
