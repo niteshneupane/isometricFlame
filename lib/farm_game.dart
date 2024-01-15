@@ -28,6 +28,8 @@ class FarmGame extends FlameGame
         "assets/images/walking_man.png",
         "assets/images/crop.png",
         "assets/images/crops.png", // 64*81
+        "assets/images/tile_maps/tile_large.png",
+
         // "assets/images/backdrop.png",
       ],
     );

@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:isometrictest/characters/farmer.dart';
+import 'package:isometrictest/components/field_component.dart';
 import 'package:isometrictest/components/land_component.dart';
 import 'package:isometrictest/components/unwalkable_component.dart';
 import 'package:isometrictest/farm_game.dart';
@@ -59,6 +60,11 @@ class FarmWorld extends World with HasGameRef<FarmGame> {
         add(UnwalkableComponent(vertices));
       }
     }
+
+    final field = FieldComponent(
+      position: size * 0.5,
+    );
+    add(field);
 
     final joyStick = JoyStick();
     farmer = Farmer(

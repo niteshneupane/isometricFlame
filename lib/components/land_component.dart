@@ -46,20 +46,17 @@ class LandComponents extends PolygonComponent
 
     paint = Paint()..color = Colors.transparent;
 
-    
-
     final tomato = Tomato(
       position: Vector2.zero(),
       show: id == 15,
     );
     add(tomato);
-    
+
     final hitbox = PolygonHitbox(
       v,
       position: Vector2.zero(),
       collisionType: CollisionType.passive,
       isSolid: true,
-      
     );
     add(hitbox);
   }
